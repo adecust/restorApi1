@@ -8,6 +8,8 @@ import lombok.*;
 @ToString
 @Table(name = "restaurant")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Restaurant {
 
     @Id
@@ -15,11 +17,10 @@ public class Restaurant {
     private Long id;
 
     @Column(name = "restaurant_name")
-        private String restaurantName;
+    private String restaurantName;
 
     @Column(name = "restaurant_location")
-        private String restaurantLocation;
-
+    private String restaurantLocation;
 
 
 }

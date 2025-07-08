@@ -24,19 +24,22 @@ public class RestaurantService {
     public Restaurant addRestaurant(Restaurant Restaurant) {
         return restaurantRepository.save(Restaurant);
     }
+
     public Optional<Restaurant> getRestaurantById(Long id) {
         return restaurantRepository.findById(id);
     }
 
     public Restaurant updateRestaurant(Long id, Restaurant updatedRestaurant) {
-        return restaurantRepository.findById(id).map(restaurant -> {
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
+        if (optionalRestaurant.isPresent()) {
+            Restaurant restaurant = optionalRestaurant.get();
             restaurant.setRestaurantName(updatedRestaurant.getRestaurantName());
             restaurant.setRestaurantLocation(updatedRestaurant.getRestaurantLocation());
             return restaurantRepository.save(restaurant);
-        }).orElseGet(() -> {
+        } else {
             updatedRestaurant.setId(id);
             return restaurantRepository.save(updatedRestaurant);
-        });
+        }
     }
 
     public void deleteRestaurant(Long id) {

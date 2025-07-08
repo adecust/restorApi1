@@ -21,23 +21,30 @@ public class RestaurantController {
     public List<Restaurant> getAllRestaurants() {
         return restaurantService.getAllRestaurants();
     }
+
     @PostMapping("/restaurants")
     public ResponseEntity<Restaurant> addRestaurant(@RequestBody Restaurant Restaurant) {
         restaurantService.addRestaurant(Restaurant);
         return ResponseEntity.ok(Restaurant);
     }
-    @GetMapping("/{id}")
-    public Optional<Restaurant> getRestaurantById(@PathVariable Long id) {
-        return restaurantService.getRestaurantById(id);
+
+    @GetMapping("/restaurants/{id}")
+    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) {
+        return restaurantService.getRestaurantById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
     @PutMapping("/{id}")
     public Restaurant updateRestaurant(@PathVariable Long id, @RequestBody Restaurant restaurant) {
         return restaurantService.updateRestaurant(id, restaurant);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteRestaurant(@PathVariable Long id) {
+    @DeleteMapping("/restaurants/{id}")
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
+        return ResponseEntity.noContent().build();
     }
+
 
 }
