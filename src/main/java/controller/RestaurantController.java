@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import services.RestaurantService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class RestaurantController {
@@ -23,9 +22,8 @@ public class RestaurantController {
     }
 
     @PostMapping("/restaurants")
-    public ResponseEntity<Restaurant> addRestaurant(@RequestBody Restaurant Restaurant) {
-        restaurantService.addRestaurant(Restaurant);
-        return ResponseEntity.ok(Restaurant);
+    public Restaurant addRestaurant(@RequestBody Restaurant restaurant) {
+        return restaurantService.addRestaurant(restaurant);
     }
 
     @GetMapping("/restaurants/{id}")
@@ -45,6 +43,4 @@ public class RestaurantController {
         restaurantService.deleteRestaurant(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
