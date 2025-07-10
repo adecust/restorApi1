@@ -1,7 +1,11 @@
 package controller;
 
-import dto.MenuDTO;
+import dto.request.MenuRequest;
+import dto.response.MenuResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import services.MenuService;
 
@@ -13,12 +17,14 @@ public class MenuController {
     private MenuService menuService;
 
     @GetMapping("/{code}")
-    public MenuDTO getMenu(@PathVariable Integer code) {
-        return menuService.getMenu(code);
+    public ResponseEntity<MenuResponse> getMenu(@PathVariable Integer code) {
+        MenuResponse response = menuService.getMenu(code);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public MenuDTO addMenu(@RequestBody MenuDTO dto) {
-        return menuService.addMenu(dto);
+    public ResponseEntity<MenuResponse> addMenu(@Valid @RequestBody MenuRequest request) {
+        MenuResponse response = menuService.addMenu(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

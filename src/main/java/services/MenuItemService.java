@@ -1,6 +1,7 @@
 package services;
 
-import dto.MenuItemDTO;
+import dto.request.MenuItemRequest;
+import dto.response.MenuItemResponse;
 import model.Menu;
 import model.MenuItem;
 import org.modelmapper.ModelMapper;
@@ -21,20 +22,20 @@ public class MenuItemService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public MenuItemDTO getMenuItem(Integer code) {
+    public MenuItemResponse getMenuItem(Integer code) {
         MenuItem item = menuItemRepository.findByCode(code);
-        return modelMapper.map(item, MenuItemDTO.class);
+        return modelMapper.map(item, MenuItemResponse.class);
     }
 
-    public MenuItemDTO addMenuItem(MenuItemDTO dto) {
-        MenuItem item = modelMapper.map(dto, MenuItem.class);
-        Menu menu = menuRepository.findByCode(dto.getMenuCode());
+    public MenuItemResponse addMenuItem(MenuItemRequest request) {
+        MenuItem item = modelMapper.map(request, MenuItem.class);
+        Menu menu = menuRepository.findByCode(request.getMenuCode());
         item.setMenu(menu);
 
         item = menuItemRepository.save(item);
         item.setCode(40000 + item.getId().intValue());
         item = menuItemRepository.save(item);
 
-        return modelMapper.map(item, MenuItemDTO.class);
+        return modelMapper.map(item, MenuItemResponse.class);
     }
 }

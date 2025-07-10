@@ -1,14 +1,14 @@
-package dto;
+package dto.response;
 
 import lombok.Data;
 
 @Data
-public class MenuItemDTO {
-    private Integer code; // ör. 40001
+public class MenuItemResponse {
+    private Integer code;
     private String name;
     private String description;
     private String category;
     private double price;
     private Boolean isAvailable;
-    private Integer menuCode; // ilişkili menu code
+    private Integer menuCode;
 }

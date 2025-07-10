@@ -1,11 +1,14 @@
 package services;
 
-import dto.CustomerDTO;
+import dto.request.CustomerRequest;
+import dto.response.CustomerResponse;
 import model.Customer;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.CustomerRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 public class CustomerService {
@@ -16,16 +19,19 @@ public class CustomerService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CustomerDTO getCustomer(Integer code) {
+    public CustomerResponse getCustomer(Integer code) {
         Customer customer = customerRepository.findByCode(code);
-        return modelMapper.map(customer, CustomerDTO.class);
+        return modelMapper.map(customer, CustomerResponse.class);
     }
 
-    public CustomerDTO addCustomer(CustomerDTO dto) {
-        Customer customer = modelMapper.map(dto, Customer.class);
+    public CustomerResponse addCustomer(CustomerRequest request) {
+        Customer customer = modelMapper.map(request, Customer.class);
+        customer.setCreatedAt(LocalDateTime.now().toString());
+
         customer = customerRepository.save(customer);
         customer.setCode(10000 + customer.getId().intValue());
         customer = customerRepository.save(customer);
-        return modelMapper.map(customer, CustomerDTO.class);
+
+        return modelMapper.map(customer, CustomerResponse.class);
     }
 }

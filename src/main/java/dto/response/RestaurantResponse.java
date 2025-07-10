@@ -1,10 +1,10 @@
-package dto;
+package dto.response;
 
 import lombok.Data;
 
 @Data
-public class RestaurantDTO {
-    private Integer code; // ör. 20001
+public class RestaurantResponse {
+    private Integer code;
     private String name;
     private String address;
     private String email;
