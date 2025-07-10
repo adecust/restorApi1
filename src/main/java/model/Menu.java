@@ -9,17 +9,19 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class Restaurant {
+public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer code; // ör. 20001
+    private Integer code; // ör. 30001
 
     private String name;
-    private String address;
-    private String email;
-    private String phone;
+    private String description;
     private String createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
 }

@@ -1,15 +1,10 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Table(name = "menu_item")
 public class MenuItem {
 
@@ -17,11 +12,26 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String itemName;
+    private Integer code;
+
+    private String name;
+    private String description;
+    private String category;
+
     private double price;
 
+    @Column(name = "is_available")
+    private boolean isAvailable;
+
+    public boolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonBackReference("category-menuitem")
-    private Category category;
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
 }

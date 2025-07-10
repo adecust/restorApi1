@@ -1,6 +1,6 @@
 package controller;
 
-import model.MenuItem;
+import dto.MenuItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import services.MenuItemService;
@@ -12,8 +12,13 @@ public class MenuItemController {
     @Autowired
     private MenuItemService menuItemService;
 
-    @PostMapping("/add")
-    public MenuItem addMenuItem(@RequestParam Long categoryId, @RequestParam String itemName, @RequestParam double price) {
-        return menuItemService.addMenuItemToCategory(categoryId, itemName, price);
+    @GetMapping("/{code}")
+    public MenuItemDTO getMenuItem(@PathVariable Integer code) {
+        return menuItemService.getMenuItem(code);
+    }
+
+    @PostMapping
+    public MenuItemDTO addMenuItem(@RequestBody MenuItemDTO dto) {
+        return menuItemService.addMenuItem(dto);
     }
 }
