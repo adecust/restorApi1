@@ -1,16 +1,16 @@
 package org.payartz.restorapi.services.Impl;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.payartz.restorapi.services.OrderService;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.payartz.restorapi.exception.ErrorCode;
+import org.payartz.restorapi.exception.exceptions.ResourceNotFoundException;
 import org.payartz.restorapi.model.converter.OrderConverter;
-import org.payartz.restorapi.model.dto.OrderDTO;
 import org.payartz.restorapi.model.entity.Order;
 import org.payartz.restorapi.model.request.OrderRequest;
 import org.payartz.restorapi.model.response.OrderResponse;
-import org.springframework.stereotype.Service;
 import org.payartz.restorapi.repository.OrderRepository;
+import org.payartz.restorapi.services.OrderService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,18 +31,16 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.ORDER_NOT_FOUND, "Order bulunamadı: " + id));
         return orderConverter.entityToResponse(order);
     }
 
     @Override
     public OrderResponse updateOrder(Long id, OrderRequest request) {
         Order existing = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order bulunamadı: " + id));
-
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.ORDER_NOT_FOUND, "Order bulunamadı: " + id));
         Order updated = orderConverter.dtoToEntity(request);
         updated.setId(existing.getId());
-
         Order saved = orderRepository.save(updated);
         return orderConverter.entityToResponse(saved);
     }
@@ -50,9 +48,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id)) {
-            throw new EntityNotFoundException("Order bulunamadı: " + id);
+            throw new ResourceNotFoundException(ErrorCode.ORDER_NOT_FOUND, "Order bulunamadı: " + id);
         }
         orderRepository.deleteById(id);
     }
 }
-

@@ -1,7 +1,8 @@
 package org.payartz.restorapi.services.Impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.payartz.restorapi.exception.ErrorCode;
+import org.payartz.restorapi.exception.exceptions.ResourceNotFoundException;
 import org.payartz.restorapi.model.converter.RestaurantConverter;
 import org.payartz.restorapi.model.entity.Restaurant;
 import org.payartz.restorapi.model.request.RestaurantRequest;
@@ -30,19 +31,17 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Transactional(readOnly = true)
     public RestaurantResponse getRestaurantById(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESTAURANT_NOT_FOUND, "Restaurant bulunamadı: " + id));
         return restaurantConverter.entityToResponse(restaurant);
     }
 
     @Override
     public RestaurantResponse updateRestaurant(Long id, RestaurantRequest request) {
         Restaurant existing = restaurantRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant bulunamadı: " + id));
-
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESTAURANT_NOT_FOUND, "Güncellenmek istenen restoran bulunamadı: " + id));
         Restaurant updated = restaurantConverter.dtoToEntity(request);
         updated.setId(existing.getId());
         updated.setCreatedAt(existing.getCreatedAt());
-
         Restaurant saved = restaurantRepository.save(updated);
         return restaurantConverter.entityToResponse(saved);
     }
@@ -50,9 +49,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public void deleteRestaurant(Long id) {
         if (!restaurantRepository.existsById(id)) {
-            throw new EntityNotFoundException("Restaurant bulunamadı: " + id);
+            throw new ResourceNotFoundException(ErrorCode.RESTAURANT_NOT_FOUND, "Silinmek istenen restoran bulunamadı: " + id);
         }
         restaurantRepository.deleteById(id);
     }
 }
-

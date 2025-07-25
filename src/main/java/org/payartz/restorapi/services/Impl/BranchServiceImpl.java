@@ -1,17 +1,17 @@
 package org.payartz.restorapi.services.Impl;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.payartz.restorapi.model.entity.Restaurant;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.payartz.restorapi.exception.ErrorCode;
+import org.payartz.restorapi.exception.exceptions.ResourceNotFoundException;
 import org.payartz.restorapi.model.converter.BranchConverter;
-import org.payartz.restorapi.model.dto.BranchDTO;
 import org.payartz.restorapi.model.entity.Branch;
+import org.payartz.restorapi.model.entity.Restaurant;
 import org.payartz.restorapi.model.request.BranchRequest;
 import org.payartz.restorapi.model.response.BranchResponse;
-import org.springframework.stereotype.Service;
 import org.payartz.restorapi.repository.BranchRepository;
 import org.payartz.restorapi.services.BranchService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -37,7 +37,6 @@ public class BranchServiceImpl implements BranchService {
         branch.setCreatedAt(LocalDateTime.now());
 
         Branch saved = branchRepository.save(branch);
-
         return branchConverter.entityToResponse(saved);
     }
 
@@ -45,36 +44,29 @@ public class BranchServiceImpl implements BranchService {
     @Transactional(readOnly = true)
     public BranchResponse getBranchById(Long id) {
         Branch branch = branchRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Branch bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.BRANCH_NOT_FOUND, "Branch bulunamadı: " + id));
         return branchConverter.entityToResponse(branch);
     }
 
     @Override
     public BranchResponse updateBranch(Long id, BranchRequest request) {
         Branch branch = branchRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Branch bulunamadı: " + id));
-
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.BRANCH_NOT_FOUND, "Branch bulunamadı: " + id));
         branch.setName(request.getName());
         branch.setAddress(request.getAddress());
         branch.setPhone(request.getPhone());
-
         Restaurant restaurant = new Restaurant();
         restaurant.setId(request.getRestaurantId());
         branch.setRestaurant(restaurant);
-
         Branch updated = branchRepository.save(branch);
-
         return branchConverter.entityToResponse(updated);
     }
-
 
     @Override
     public void deleteBranch(Long id) {
         if (!branchRepository.existsById(id)) {
-            throw new EntityNotFoundException("Branch bulunamadı: " + id);
+            throw new ResourceNotFoundException(ErrorCode.BRANCH_NOT_FOUND, "Branch bulunamadı: " + id);
         }
         branchRepository.deleteById(id);
     }
-
 }
-

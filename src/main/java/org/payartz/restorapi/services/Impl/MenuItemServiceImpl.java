@@ -1,7 +1,8 @@
 package org.payartz.restorapi.services.Impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.payartz.restorapi.exception.ErrorCode;
+import org.payartz.restorapi.exception.exceptions.ResourceNotFoundException;
 import org.payartz.restorapi.model.converter.MenuItemConverter;
 import org.payartz.restorapi.model.entity.MenuItem;
 import org.payartz.restorapi.model.request.MenuItemRequest;
@@ -30,18 +31,16 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Transactional(readOnly = true)
     public MenuItemResponse getMenuItemById(Long id) {
         MenuItem item = menuItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("MenuItem bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.MENU_ITEM_NOT_FOUND, "MenuItem bulunamadı: " + id));
         return menuItemConverter.entityToResponse(item);
     }
 
     @Override
     public MenuItemResponse updateMenuItem(Long id, MenuItemRequest request) {
         MenuItem existing = menuItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("MenuItem bulunamadı: " + id));
-
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.MENU_ITEM_NOT_FOUND, "MenuItem bulunamadı: " + id));
         MenuItem updated = menuItemConverter.dtoToEntity(request);
         updated.setId(existing.getId());
-
         MenuItem saved = menuItemRepository.save(updated);
         return menuItemConverter.entityToResponse(saved);
     }
@@ -49,9 +48,8 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Override
     public void deleteMenuItem(Long id) {
         if (!menuItemRepository.existsById(id)) {
-            throw new EntityNotFoundException("MenuItem bulunamadı: " + id);
+            throw new ResourceNotFoundException(ErrorCode.MENU_ITEM_NOT_FOUND, "MenuItem bulunamadı: " + id);
         }
         menuItemRepository.deleteById(id);
     }
 }
-
